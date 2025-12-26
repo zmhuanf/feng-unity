@@ -320,7 +320,6 @@ public class Client
                 }
                 // 请求
                 RequestType resType = req.type == RequestType.Request ? RequestType.RequestBack : RequestType.PushBack;
-                // 中间件处理
                 var midDic = isSys ? _middlewaresSys : _middlewares;
                 var ctx = new Context(this);
                 var res = new Request
@@ -333,6 +332,7 @@ public class Client
                 };
                 try
                 {
+                    // 中间件处理
                     foreach (var mid in midDic)
                     {
                         if (mid.Match(req.route))
@@ -364,7 +364,7 @@ public class Client
             }
             catch (Exception ex)
             {
-                Config.Logger.Error($"处理消息时出错: {ex.Message}");
+                Config.Logger.Error($"Error occurred while processing the message: {ex.Message}");
             }
         }
     }
