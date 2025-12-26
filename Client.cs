@@ -368,4 +368,9 @@ public class Client
             }
         }
     }
+
+    public bool IsConnected()
+    {
+        return _conn != null && _conn.State == WebSocketState.Open && _connSys != null && _connSys.State == WebSocketState.Open;
+    }
 }
