@@ -61,11 +61,11 @@ public class Client
     {
         var dic = isSys ? _callbacksSys : _callbacks;
         var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var req = new Request
+        var req = new Message
         {
             route = route,
             id = Guid.NewGuid().ToString(),
-            type = RequestType.Request,
+            type = MessageType.Request,
             data = Marshal(data)
         };
         void wrappedCallback(IContext ctx, string data, bool success)
@@ -108,11 +108,11 @@ public class Client
     {
         var dic = isSys ? _callbacksSys : _callbacks;
         var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var req = new Request
+        var req = new Message
         {
             route = route,
             id = Guid.NewGuid().ToString(),
-            type = RequestType.Push,
+            type = MessageType.Push,
             data = Marshal(data)
         };
         void wrappedCallback(IContext context, string data, bool success)
@@ -232,17 +232,17 @@ public class Client
 
     private async Task push(string route, object data, bool isSys)
     {
-        var req = new Request
+        var req = new Message
         {
             route = route,
             id = Guid.NewGuid().ToString(),
-            type = RequestType.Push,
+            type = MessageType.Push,
             data = Marshal(data)
         };
         await send(req, isSys);
     }
 
-    private async Task send(Request req, bool isSys)
+    private async Task send(Message req, bool isSys)
     {
         var conn = isSys ? _connSys : _conn;
         if (conn.State != WebSocketState.Open)
@@ -302,14 +302,14 @@ public class Client
                 }
                 // 读取的信息
                 string message = Encoding.UTF8.GetString(messageStream.ToArray());
-                var req = Config.Codec.Unmarshal<Request>(message);
+                var req = Config.Codec.Unmarshal<Message>(message);
                 // 推送的回复，不处理
-                if (req.type == RequestType.PushBack)
+                if (req.type == MessageType.PushBack)
                 {
                     continue;
                 }
                 // 请求的回复
-                if (req.type == RequestType.RequestBack)
+                if (req.type == MessageType.RequestBack)
                 {
                     if (dic.TryRemove(req.id, out var callback))
                     {
@@ -319,10 +319,10 @@ public class Client
                     continue;
                 }
                 // 请求
-                RequestType resType = req.type == RequestType.Request ? RequestType.RequestBack : RequestType.PushBack;
+                MessageType resType = req.type == MessageType.Request ? MessageType.RequestBack : MessageType.PushBack;
                 var midDic = isSys ? _middlewaresSys : _middlewares;
                 var ctx = new Context(this);
-                var res = new Request
+                var res = new Message
                 {
                     route = "",
                     id = req.id,

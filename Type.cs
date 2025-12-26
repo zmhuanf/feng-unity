@@ -1,4 +1,4 @@
-public enum RequestType
+public enum MessageType
 {
     Request = 0,
     Push = 1,
@@ -6,11 +6,11 @@ public enum RequestType
     PushBack = 3
 }
 
-public class Request
+public class Message
 {
     public string route;
     public string id;
-    public RequestType type;
+    public MessageType type;
     public string data;
     public bool success;
 }
