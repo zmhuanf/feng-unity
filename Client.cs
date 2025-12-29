@@ -58,6 +58,11 @@ public class Client
         handle(false);
     }
 
+    public async Task Request<T>(string route, Action<IContext, T> callback)
+    {
+        await request<T>(route, "", callback, false);
+    }
+
     public async Task Request<T>(string route, object data, Action<IContext, T> callback)
     {
         await request<T>(route, data, callback, false);
@@ -111,6 +116,11 @@ public class Client
     public async Task Request(string route, object data, Action<IContext> callback)
     {
         await request(route, data, callback, false);
+    }
+
+    public async Task Request(string route, Action<IContext> callback)
+    {
+        await request(route, "", callback, false);
     }
 
     private async Task request(string route, object data, Action<IContext> callback, bool isSys)
