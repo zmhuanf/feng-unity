@@ -46,6 +46,8 @@ public class Client
 
     private async Task connectSys(string ipp)
     {
+        _connSys.Dispose();
+        _connSys = new();
         var uri = new Uri($"ws{(Config.EnableTls ? "s" : "")}://{ipp}/system");
         await _connSys.ConnectAsync(uri, _cancelSys.Token);
         handle(true);
@@ -53,6 +55,8 @@ public class Client
 
     private async Task connectUser(string ipp)
     {
+        _conn.Dispose();
+        _conn = new();
         var uri = new Uri($"ws{(Config.EnableTls ? "s" : "")}://{ipp}/game");
         await _conn.ConnectAsync(uri, _cancel.Token);
         handle(false);
