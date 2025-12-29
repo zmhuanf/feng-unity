@@ -118,7 +118,7 @@ public class Client
         {
             route = route,
             id = Guid.NewGuid().ToString(),
-            type = MessageType.Push,
+            type = MessageType.Request,
             data = Marshal(data)
         };
         void wrappedCallback(IContext context, string data, bool success)
