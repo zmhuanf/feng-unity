@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 public interface IContext
 {
@@ -10,7 +10,7 @@ public interface IContext
 public class Context : IContext
 {
     public Client Client { get; private set; }
-    private Dictionary<string, object> _data = new();
+    private ConcurrentDictionary<string, object> _data = new();
 
     public Context(Client client)
     {

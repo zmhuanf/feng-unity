@@ -15,6 +15,12 @@ public class Client
     private ConcurrentDictionary<string, Action<IContext, string, bool>> _callbacks = new(), _callbacksSys = new();
     private List<Middleware<object>> _middlewares = new(), _middlewaresSys = new();
     private ConcurrentDictionary<string, Func<IContext, string, object>> _handlers = new(), _handlersSys = new();
+    private IContext _ctx = null;
+
+    public Client()
+    {
+        _ctx = new Context(this);
+    }
 
     public async Task Connect()
     {
@@ -313,15 +319,13 @@ public class Client
                 {
                     if (dic.TryRemove(req.id, out var callback))
                     {
-                        var context = new Context(this);
-                        callback(context, req.data, req.success);
+                        callback(_ctx, req.data, req.success);
                     }
                     continue;
                 }
                 // 请求
                 MessageType resType = req.type == MessageType.Request ? MessageType.RequestBack : MessageType.PushBack;
                 var midDic = isSys ? _middlewaresSys : _middlewares;
-                var ctx = new Context(this);
                 var res = new Message
                 {
                     route = "",
@@ -337,14 +341,14 @@ public class Client
                     {
                         if (mid.Match(req.route))
                         {
-                            mid.Handler(ctx, req.data);
+                            mid.Handler(_ctx, req.data);
                         }
                     }
                     // 路由处理
                     var handlerDic = isSys ? _handlersSys : _handlers;
                     if (handlerDic.TryGetValue(req.route, out var handler))
                     {
-                        var ret = handler(ctx, req.data);
+                        var ret = handler(_ctx, req.data);
                         if (ret != null)
                         {
                             res.data = Marshal(ret);
