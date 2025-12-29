@@ -78,13 +78,16 @@ public class Client
         {
             if (success)
             {
-                T callData = typeof(T) switch
+                if (callback != null)
                 {
-                    Type t when t == typeof(string) => (T)(object)data,
-                    Type t when t == typeof(byte[]) => (T)(object)Encoding.UTF8.GetBytes(data),
-                    _ => Config.Codec.Unmarshal<T>(data)
-                };
-                callback(ctx, callData);
+                    T callData = typeof(T) switch
+                    {
+                        Type t when t == typeof(string) => (T)(object)data,
+                        Type t when t == typeof(byte[]) => (T)(object)Encoding.UTF8.GetBytes(data),
+                        _ => Config.Codec.Unmarshal<T>(data)
+                    };
+                    callback(ctx, callData);
+                }
                 tcs.SetResult(null);
                 return;
             }
@@ -125,7 +128,10 @@ public class Client
         {
             if (success)
             {
-                callback(context);
+                if (callback != null)
+                {
+                    callback(context);
+                }
                 tcs.SetResult(null);
                 return;
             }
