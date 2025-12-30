@@ -81,7 +81,7 @@ public class Client
             route = route,
             id = Guid.NewGuid().ToString(),
             type = MessageType.Request,
-            data = Marshal(data)
+            data = Config.Codec.Marshal(data)
         };
         void wrappedCallback(IContext ctx, string data, bool success)
         {
@@ -136,7 +136,7 @@ public class Client
             route = route,
             id = Guid.NewGuid().ToString(),
             type = MessageType.Request,
-            data = Marshal(data)
+            data = Config.Codec.Marshal(data)
         };
         void wrappedCallback(IContext context, string data, bool success)
         {
@@ -263,7 +263,7 @@ public class Client
             route = route,
             id = Guid.NewGuid().ToString(),
             type = MessageType.Push,
-            data = Marshal(data)
+            data = Config.Codec.Marshal(data)
         };
         await send(req, isSys);
     }
@@ -279,25 +279,6 @@ public class Client
         var strReq = Config.Codec.Marshal(req);
         var bytes = Encoding.UTF8.GetBytes(strReq);
         await conn.SendAsync(new System.ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, cancel.Token);
-    }
-
-    private string Marshal(object data)
-    {
-        // 特殊处理字符串和字节数组
-        string strData = "";
-        if (data is string s)
-        {
-            strData = s;
-        }
-        else if (data is byte[] b)
-        {
-            strData = Encoding.UTF8.GetString(b);
-        }
-        else
-        {
-            strData = Config.Codec.Marshal(data);
-        }
-        return strData;
     }
 
     private async void handle(bool isSys)
@@ -371,7 +352,7 @@ public class Client
                         var ret = handler(_ctx, req.data);
                         if (ret != null)
                         {
-                            res.data = Marshal(ret);
+                            res.data = Config.Codec.Marshal(ret);
                         }
                     }
                     else
