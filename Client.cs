@@ -251,6 +251,11 @@ public class Client
         dic.TryAdd(route, wrappedHandler);
     }
 
+    public async Task Push(string route)
+    {
+        await push(route, "", false);
+    }
+
     public async Task Push(string route, object data)
     {
         await push(route, data, false);
