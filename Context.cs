@@ -1,18 +1,18 @@
 using System.Collections.Concurrent;
 
-public interface IContext
+public interface IClientContext
 {
     public Client Client { get; }
     public void Set(string key, object value);
     public bool Get<T>(string key, out T value);
 }
 
-public class Context : IContext
+public class ClientContext : IClientContext
 {
     public Client Client { get; private set; }
-    private ConcurrentDictionary<string, object> _data = new();
+    private readonly ConcurrentDictionary<string, object> _data = new();
 
-    public Context(Client client)
+    public ClientContext(Client client)
     {
         Client = client;
     }
